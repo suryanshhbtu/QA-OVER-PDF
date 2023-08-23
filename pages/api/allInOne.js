@@ -6,26 +6,30 @@ import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { RetrievalQAChain } from "langchain/chains";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
+import { PromptTemplate } from "langchain/prompts";
+
+
+const key = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 
 async function allInOne(req, res) {
     console.log("allInOne Called backend");
     if (req.method == 'POST') {
-        try {
+        // try {
 
             // Document loader
             // const loader = new PDFLoader("../../res/android-interview-questions.pdf");
             // Document loader
             
-            const loader = new PDFLoader('C:\Users\Suryansh Srivastava\Desktop\Suryansh\QA and Chat over Documents\QA_OVER_PDF\res\CourseFeeOnlineReceipt.pdf', {
+            const loader = new PDFLoader(`C:\\Users\\Suryansh Srivastava\\Desktop\\Suryansh\\QA and Chat over Documents\\QA_OVER_PDF\\res\\CourseFeeOnlineReceipt.pdf`, {
               splitPages: false,
             });
+
+            
             
             // const docs = await loader.load();
             // const loader = new CheerioWebBaseLoader(
             //   req.body.url
             // );
-            
-            console.log("loadeder"+load);
             const data = await loader.load();
             console.log("data loaded"+data);
             // doc splitter
@@ -38,7 +42,7 @@ async function allInOne(req, res) {
       
             // embedding and vector store
             const embeddings = new OpenAIEmbeddings({
-              openAIApiKey: "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",
+              openAIApiKey: key,
             });
             const vectorStore = await MemoryVectorStore.fromDocuments(splitDocs, embeddings);
             console.log("vector store : "+vectorStore);
@@ -52,21 +56,39 @@ async function allInOne(req, res) {
       
             const model = new ChatOpenAI({
               modelName: "gpt-3.5-turbo",
-              openAIApiKey: "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",
-              temperature: 0
+              openAIApiKey: key,
             });
-            const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever());
+            // const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever());
       
+            const template = `Use the following pieces of context to answer the question at the end.
+            If you don't know the answer, just say that you don't know, don't try to make up an answer.
+            Use three sentences maximum and keep the answer as concise as possible.
+            Always say "thanks for asking!" at the end of the answer.
+            {context}
+            Question: {question}
+            Helpful Answer:`;
+            
+            const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever(), {
+              prompt: PromptTemplate.fromTemplate(template),
+            });
+            
             const response = await chain.call({
               query: req.body.question
             });
+            
+            console.log(response);
+            
+
+            // const response = await chain.call({
+            //   query: req.body.question
+            // });
             console.log(response);
             res.status(200).json({response: response});
 
-          } catch {
-            console.log("Error ");
-            res.status(500).json({message: "Error"});
-          }
+        //   } catch {
+        //     console.log("Error ");
+        //     res.status(500).json({message: "Error"});
+        //   }
     }
     console.log("Post do");
     
