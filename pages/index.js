@@ -1,10 +1,10 @@
 
 import { Fragment } from 'react';
-
+import PDFQAForm from '../components/PDFQAForm';
 export default function Home() {
   return (
     <Fragment>
-      <h1>BASE PAGE</h1>
+      <PDFQAForm />
     </Fragment>
   );
 }

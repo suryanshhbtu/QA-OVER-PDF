@@ -17,7 +17,6 @@ const QuestionForm = (props) => {
 
   return (
     <div className={styles.container}>
-      <h1>"PDFQuest: Your Interactive PDF Question and Answer Hub"</h1>
       <form className={styles.form} onSubmit={handleSubmit} >
         <label className={styles.label}>Enter your question:</label>
         <input

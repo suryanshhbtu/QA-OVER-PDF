@@ -1,9 +1,9 @@
 
-import styles from '../styles/loader.module.css';
+import styles from './loader.module.css';
 
 function Loader() {
     return (
-        <div>
+        <div >
             <div
                 aria-label='Orange and tan hamster running in a metal wheel'
                 role='img'
