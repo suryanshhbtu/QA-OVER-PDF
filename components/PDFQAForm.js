@@ -1,31 +1,35 @@
 import React, { useRef, useState } from 'react';
 import styles from '../styles/PDFQAForm.module.css';
 
-const PDFQAForm = () => {
-    const [pdfFile, setPdfFile] = useState(null);
-    const [question, setQuestion] = useState('');
+
+const PDFQAForm = (props) => {
     const quesRef = useRef();
+    const [pdfFile, setPdfFile] = useState(null);
 
     const handlePdfUpload = (event) => {
         const uploadedFile = event.target.files[0];
+        setPdfFile(uploadedFile);
+    };
 
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const pdfData = event.target.result;
-            // Store PDF data in sessionStorage
-            sessionStorage.setItem('pdfData', pdfData);
-        };
-        reader.readAsArrayBuffer(uploadedFile);
+    const handleProcessPdf = () => {
+        if (pdfFile) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64Pdf = btoa(reader.result);
+                sessionStorage.removeItem('pdfData');
+                sessionStorage.setItem('pdfData', base64Pdf);
+                console.log('PDF stored in sessionStorage');
+            };
+            reader.readAsBinaryString(pdfFile);
+        }
     };
 
     const onSubmitHandler = (event) => {
         event.preventDefault();
-        setQuestion(quesRef.current.value);
-        console.log(question);
+        handleProcessPdf();
+        console.log(quesRef.current.value);
+        props.questionPageSubmit(quesRef.current.value);
     };
-
-
-    
 
     return (
         <div className={styles.container}>
@@ -45,8 +49,8 @@ const PDFQAForm = () => {
                 </button>
             </form>
             <div className={styles.answerArea}>
-                <h2>Answer</h2>
-                <div className={styles.answerText}>{"answer"}</div>
+                <h3>Answer</h3>
+                <div className={styles.answerText}>{props.text}</div>
             </div>
         </div>
     );

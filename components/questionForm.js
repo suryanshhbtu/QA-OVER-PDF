@@ -4,6 +4,9 @@ import styles from '../styles/questionForm.module.css';
 const QuestionForm = (props) => {
   const quesRef = useRef();
   const [question, setQuestion] = useState('');
+
+
+
   const handleSubmit = (event) => {
     event.preventDefault();
     // Handle form submission here
@@ -14,7 +17,8 @@ const QuestionForm = (props) => {
 
   return (
     <div className={styles.container}>
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <h1>"PDFQuest: Your Interactive PDF Question and Answer Hub"</h1>
+      <form className={styles.form} onSubmit={handleSubmit} >
         <label className={styles.label}>Enter your question:</label>
         <input
           type="text"
