@@ -16,13 +16,17 @@ const PDFQAForm = (props) => {
     const [showAlertNoPDF, setShowAlertNoPDF] = useState(false);
 
     useEffect(() => {
-        if (base64Pdf) questionPageSubmitHandler();
-    }, [base64Pdf])
+        // Retrieve PDF data from Session Storage
+        if (pdfFile) {
+            handleProcessPdf();
+        }
+    }, [pdfFile]);
     const handlePdfUpload = (event) => {
         const uploadedFile = event.target.files[0];
         if (uploadedFile) setPdfName(uploadedFile.name);
-        // console.log("EVENT" + (event.target.files[0].name));
+        console.log("EVENT " + (uploadedFile.name));
         setPdfFile(uploadedFile);
+
     };
 
     function handleProcessPdf() {
@@ -81,9 +85,7 @@ const PDFQAForm = (props) => {
     }
     async function questionPageSubmitHandler() {
 
-
-        handleProcessPdf();
-        fetchHandler();
+        await fetchHandler();
 
     }
     return (
