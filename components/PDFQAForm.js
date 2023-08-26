@@ -1,4 +1,4 @@
-import React, { Fragment, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import styles from './PDFQAForm.module.css';
 import Loader from './loader';
 import PDFUpload from './pdfUploadBox';
@@ -15,22 +15,22 @@ const PDFQAForm = (props) => {
     const [isLoading, setIsLoading] = useState(false);
     const [showAlertNoPDF, setShowAlertNoPDF] = useState(false);
 
+    useEffect(() => {
+        if (base64Pdf) questionPageSubmitHandler();
+    }, [base64Pdf])
     const handlePdfUpload = (event) => {
         const uploadedFile = event.target.files[0];
-        setPdfName(event.target.files[0].name);
+        if (uploadedFile) setPdfName(uploadedFile.name);
         // console.log("EVENT" + (event.target.files[0].name));
         setPdfFile(uploadedFile);
     };
 
-    const handleProcessPdf = () => {
+    function handleProcessPdf() {
         if (pdfFile) {
             const reader = new FileReader();
             reader.onload = () => {
                 const base64Pdf = btoa(reader.result);
                 setBase64Pdf(base64Pdf);
-                // console.log('PDF stored in useState');
-                // console.log(typeof base64Pdf);
-                // console.log(base64Pdf);
             };
             reader.readAsBinaryString(pdfFile);
         }
@@ -52,8 +52,8 @@ const PDFQAForm = (props) => {
         setShowAlertNoPDF(false);
     }
 
-    async function questionPageSubmitHandler() {
-        // console.log("b4 fetch");
+
+    async function fetchHandler() {
         setIsLoading(true);
         await fetch('/api/allInOne', {
             method: 'POST',
@@ -78,6 +78,13 @@ const PDFQAForm = (props) => {
             console.log("Error InFetch");
             console.error("Error : ", err);
         })
+    }
+    async function questionPageSubmitHandler() {
+
+
+        handleProcessPdf();
+        fetchHandler();
+
     }
     return (
         <Fragment >
