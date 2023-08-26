@@ -4,7 +4,6 @@ import Loader from './loader';
 import PDFUpload from './pdfUploadBox';
 import AlertBox from './AlertBox';
 
-
 const PDFQAForm = (props) => {
 
     const [response, setResponse] = useState({ response: { text: "" } });
@@ -23,8 +22,10 @@ const PDFQAForm = (props) => {
     }, [pdfFile]);
     const handlePdfUpload = (event) => {
         const uploadedFile = event.target.files[0];
-        if (uploadedFile) setPdfName(uploadedFile.name);
-        console.log("EVENT " + (uploadedFile.name));
+        if (uploadedFile) {
+            setPdfName(uploadedFile.name);
+            console.log("EVENT " + (uploadedFile.name));
+        }
         setPdfFile(uploadedFile);
 
     };
@@ -85,6 +86,7 @@ const PDFQAForm = (props) => {
     }
     async function questionPageSubmitHandler() {
 
+        setResponse({ response: { text: "Generating..." } })
         await fetchHandler();
 
     }
@@ -107,6 +109,8 @@ const PDFQAForm = (props) => {
                     <textarea
                         className={styles.input}
                         ref={quesRef}
+                        defaultValue="write question here"
+                        onClick={(e) => { if (e.target.value === 'write question here') e.target.value = '' }}
                     />
 
                     <button type="submit" className={styles.button}>
